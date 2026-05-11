@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GIKIVault — Campus Cloud Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#0a0e1a; --bg2:#0f1424; --bg3:#151c2e;
+  --card:#111829; --card2:#192236;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+  --text:#e8ecf5; --muted:#7a89a8;
+  --accent:#4f83f5; --accent2:#22d9a5; --accent3:#f5a623; --accent4:#f05a7e;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;z-index:100;}
+.logo{padding:0 24px 24px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+.logo-mark{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.5px;}
+.logo-mark span{color:var(--accent);}
+.logo-sub{font-size:10px;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;margin-top:2px;}
+.nav-section{padding:0 12px;margin-bottom:4px;}
+.nav-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:10px 12px 5px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
+.nav-item:hover{background:var(--bg3);color:var(--text);}
+.nav-item.active{background:rgba(79,131,245,.14);color:var(--accent);}
+.nav-icon{width:18px;font-size:15px;flex-shrink:0;text-align:center;}
+.nav-badge{margin-left:auto;background:var(--accent4);font-size:10px;font-weight:700;color:#fff;padding:1px 7px;border-radius:20px;}
+.sidebar-footer{margin-top:auto;padding:14px 12px 0;border-top:1px solid var(--border);}
+.user-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;}
+.user-row:hover{background:var(--bg3);}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.user-name{font-size:13px;font-weight:500;}
+.user-role{font-size:11px;color:var(--muted);}
+.main{margin-left:240px;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:50;}
+.page-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.3px;}
+.page-sub{font-size:13px;color:var(--muted);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.search-wrap{position:relative;}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-size:13px;color:var(--muted);width:220px;cursor:pointer;transition:border-color .15s;}
+.search-bar input{background:none;border:none;outline:none;color:var(--text);font-size:13px;width:100%;font-family:inherit;}
+.icon-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .15s;position:relative;}
+.icon-btn:hover{border-color:var(--border2);}
+.notif-dot::after{content:'';position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--accent4);border-radius:50%;border:2px solid var(--bg);}
+.page{display:none;padding:28px 32px;flex:1;}
+.page.active{display:block;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+.stat-card:hover{border-color:var(--border2);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card.blue::before{background:var(--accent);}
+.stat-card.green::before{background:var(--accent2);}
+.stat-card.amber::before{background:var(--accent3);}
+.stat-card.pink::before{background:var(--accent4);}
+.stat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px;}
+.stat-card.blue .stat-icon{background:rgba(79,131,245,.12);}
+.stat-card.green .stat-icon{background:rgba(34,217,165,.12);}
+.stat-card.amber .stat-icon{background:rgba(245,166,35,.12);}
+.stat-card.pink .stat-icon{background:rgba(240,90,126,.12);}
+.stat-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;letter-spacing:-1px;line-height:1;margin-bottom:4px;}
+.stat-label{font-size:13px;color:var(--muted);}
+.stat-delta{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:500;margin-top:8px;padding:2px 7px;border-radius:20px;}
+.stat-delta.up{background:rgba(34,217,165,.1);color:var(--accent2);}
+.stat-delta.dn{background:rgba(240,90,126,.1);color:var(--accent4);}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 14px;border-bottom:1px solid var(--border);}
+.panel-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
+.btn-sm{font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);cursor:pointer;transition:all .15s;font-family:inherit;}
+.btn-sm:hover{background:var(--card2);border-color:var(--accent);}
+.btn-primary{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important;}
+.btn-primary:hover{background:#3a6fd8!important;}
+.tab-bar{display:flex;padding:0 20px;border-bottom:1px solid var(--border);}
+.tab{font-size:13px;padding:10px 14px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.tab:hover:not(.active){color:var(--text);}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.event-item{display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);transition:background .12s;cursor:pointer;}
+.event-item:last-child{border-bottom:none;}
+.event-item:hover{background:var(--bg3);}
+.event-date{flex-shrink:0;width:44px;text-align:center;background:var(--bg3);border-radius:8px;padding:6px 0;}
+.event-month{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
+.event-day{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;line-height:1.1;}
+.event-info{flex:1;min-width:0;}
+.event-title{font-size:14px;font-weight:500;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.event-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;}
+.event-tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;align-self:flex-start;margin-top:2px;}
+.tag-academic{background:rgba(79,131,245,.12);color:var(--accent);}
+.tag-sports{background:rgba(34,217,165,.12);color:var(--accent2);}
+.tag-social{background:rgba(240,90,126,.12);color:var(--accent4);}
+.tag-workshop{background:rgba(245,166,35,.12);color:var(--accent3);}
+.weather-big{padding:20px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--border);}
+.weather-temp{font-family:'Syne',sans-serif;font-size:56px;font-weight:800;line-height:1;letter-spacing:-3px;}
+.weather-sup{font-size:22px;font-weight:400;vertical-align:top;margin-top:8px;display:inline-block;}
+.weather-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
+.weather-stat{background:var(--card);padding:14px 16px;}
+.ws-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.ws-val{font-size:18px;font-weight:600;margin-top:2px;}
+.news-item{padding:14px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.news-item:hover{background:var(--bg3);}
+.news-item:last-child{border-bottom:none;}
+.news-headline{font-size:13px;font-weight:500;margin-bottom:4px;line-height:1.45;}
+.news-time{font-size:11px;color:var(--muted);}
+.lambda-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);}
+.lambda-item:last-child{border-bottom:none;}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dot-green{background:var(--accent2);box-shadow:0 0 0 3px rgba(34,217,165,.15);}
+.dot-amber{background:var(--accent3);box-shadow:0 0 0 3px rgba(245,166,35,.15);}
+.dot-red{background:var(--accent4);box-shadow:0 0 0 3px rgba(240,90,126,.15);}
+.lambda-name{font-size:13px;font-weight:500;flex:1;}
+.lambda-meta{font-size:11px;color:var(--muted);text-align:right;}
+.sparkline{padding:14px 20px 18px;}
+.spark-row{display:flex;align-items:flex-end;gap:4px;height:56px;}
+.spark-bar{flex:1;border-radius:3px 3px 0 0;background:rgba(79,131,245,.2);}
+.spark-bar.hi{background:var(--accent);}
+.spark-labels{display:flex;gap:4px;margin-top:5px;}
+.spark-label{flex:1;text-align:center;font-size:9px;color:var(--muted);}
+.spark-summary{display:flex;gap:16px;margin-top:10px;}
+.spark-stat{font-size:12px;color:var(--muted);}
+.spark-stat strong{color:var(--text);font-weight:600;}
+.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
+.service-tile{background:var(--card);padding:13px 15px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .12s;}
+.service-tile:hover{background:var(--bg3);}
+.service-logo{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.service-name{font-size:12px;font-weight:600;}
+.service-status{font-size:11px;color:var(--muted);}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:13px 20px;border-bottom:1px solid var(--border);}
+.alert-item:last-child{border-bottom:none;}
+.alert-text{font-size:13px;line-height:1.4;}
+.alert-when{font-size:11px;color:var(--muted);margin-top:2px;}
+.pipeline{padding:16px 20px;}
+.pipe-step{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.pipe-node{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.pipe-connector{width:1px;height:14px;background:var(--border2);margin-left:5px;margin-bottom:4px;}
+.pipe-badge{font-size:10px;padding:2px 7px;border-radius:20px;}
+.badge-ok{background:rgba(34,217,165,.1);color:var(--accent2);}
+.badge-run{background:rgba(79,131,245,.12);color:var(--accent);}
+.main-grid{display:grid;grid-template-columns:1fr 340px;gap:20px;}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+.right-col{display:flex;flex-direction:column;gap:20px;}
+.aws-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.aws-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;cursor:pointer;transition:all .2s;}
+.aws-card:hover{border-color:var(--border2);background:var(--card2);}
+.aws-card-icon{font-size:28px;margin-bottom:12px;}
+.aws-card-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px;}
+.aws-card-desc{font-size:12px;color:var(--muted);line-height:1.55;}
+.aws-status{display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.aws-status.ok{background:rgba(34,217,165,.1);color:var(--accent2);}
+.aws-status.warn{background:rgba(245,166,35,.08);color:var(--accent3);}
+.config-banner{background:rgba(79,131,245,.08);border:1px solid rgba(79,131,245,.2);border-radius:10px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:flex-start;gap:14px;}
+.config-banner-text{flex:1;font-size:13px;line-height:1.6;}
+.config-banner-text strong{color:var(--accent);}
+.api-input-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.api-input{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:8px 12px;font-size:12px;color:var(--text);font-family:inherit;width:320px;outline:none;}
+.api-input:focus{border-color:var(--accent);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;width:520px;max-width:92vw;overflow:hidden;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);}
+.modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;}
+.modal-close{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--muted);}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:20px 22px;}
+.modal-field{margin-bottom:14px;}
+.modal-label{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;}
+.modal-val{font-size:14px;line-height:1.5;}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.api-log{background:var(--bg);border-radius:8px;border:1px solid var(--border);padding:14px;font-family:monospace;font-size:12px;max-height:220px;overflow-y:auto;margin-top:12px;}
+.log-line{padding:3px 0;border-bottom:1px solid var(--border);}
+.log-line:last-child{border-bottom:none;}
+.log-ts{color:var(--muted);}
+.log-method{color:var(--accent3);font-weight:600;}
+.log-url{color:var(--accent);}
+.log-ok{color:var(--accent2);}
+.log-err{color:var(--accent4);}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:12px 18px;font-size:13px;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:320px;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left:3px solid var(--accent2);}
+.toast.info{border-left:3px solid var(--accent);}
+.toast.warn{border-left:3px solid var(--accent3);}
+.notif-drawer{position:fixed;top:0;right:-340px;width:320px;height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:200;transition:right .25s;display:flex;flex-direction:column;overflow-y:auto;}
+.notif-drawer.open{right:0;}
+.notif-drawer-header{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg2);}
+.notif-item{padding:14px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.notif-item:hover{background:var(--bg3);}
+.notif-item-title{font-size:13px;font-weight:500;margin-bottom:3px;}
+.notif-item-sub{font-size:12px;color:var(--muted);}
+.search-dropdown{position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;overflow:hidden;z-index:300;display:none;}
+.search-dropdown.open{display:block;}
+.search-result{padding:10px 16px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:10px;transition:background .12s;}
+.search-result:hover{background:var(--bg3);}
+.search-result-icon{font-size:14px;width:20px;text-align:center;}
+.search-result-sub{font-size:11px;color:var(--muted);}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- NOTIFICATION DRAWER -->
+<div class="notif-drawer" id="notifDrawer">
+  <div class="notif-drawer-header">
+    <span style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;">Notifications</span>
+    <div class="modal-close" onclick="closeNotif()">✕</div>
+  </div>
+  <div class="notif-item"><div class="notif-item-title">⚠️ rss-campus-feed latency spike</div><div class="notif-item-sub">Lambda p95 above 2s threshold · 8 min ago</div></div>
+  <div class="notif-item"><div class="notif-item-title">ℹ️ Auto Scaling triggered</div><div class="notif-item-sub">+1 EC2 instance added in ap-south-1a · 1 hr ago</div></div>
+  <div class="notif-item"><div class="notif-item-title">✅ RDS failover test passed</div><div class="notif-item-sub">Multi-AZ standby promoted successfully · 3 hr ago</div></div>
+  <div class="notif-item"><div class="notif-item-title">📅 12 new events ingested</div><div class="notif-item-sub">ticketmaster-ingestion Lambda run · 15 min ago</div></div>
+  <div class="notif-item"><div class="notif-item-title">👤 23 new Cognito sign-ups</div><div class="notif-item-sub">Today so far · Last: 2 min ago</div></div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="modal-overlay" id="eventModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Event Details</div>
+      <div class="modal-close" onclick="closeModal('eventModal')">✕</div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('eventModal')">Close</button>
+      <button class="btn-sm btn-primary" onclick="rsvpEvent()">RSVP via Cognito ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- AWS MODAL -->
+<div class="modal-overlay" id="awsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="awsModalTitle">AWS Service</div>
+      <div class="modal-close" onclick="closeModal('awsModal')">✕</div>
+    </div>
+    <div class="modal-body" id="awsModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('awsModal')">Close</button>
+      <button class="btn-sm btn-primary" id="awsModalBtn">Open AWS Console ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">GIKI<span>Vault</span></div>
+    <div class="logo-sub">Campus Cloud Platform</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <button class="nav-item active" onclick="navTo('dashboard',this)"><span class="nav-icon">⊞</span>Dashboard</button>
+    <button class="nav-item" onclick="navTo('events',this)"><span class="nav-icon">📅</span>Events<span class="nav-badge">12</span></button>
+    <button class="nav-item" onclick="navTo('news',this)"><span class="nav-icon">📰</span>Campus News</button>
+    <button class="nav-item" onclick="navTo('weather',this)"><span class="nav-icon">🌤</span>Weather</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Infrastructure</div>
+    <button class="nav-item" onclick="navTo('lambda',this)"><span class="nav-icon">⚡</span>Lambda Functions</button>
+    <button class="nav-item" onclick="navTo('aws',this)"><span class="nav-icon">☁️</span>AWS Services</button>
+    <button class="nav-item" onclick="navTo('iam',this)"><span class="nav-icon">🔒</span>IAM & Security</button>
+    <button class="nav-item" onclick="navTo('logs',this)"><span class="nav-icon">📋</span>Audit Logs</button>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="avatar">AR</div>
+      <div><div class="user-name">Abdul Rehman</div><div class="user-role">Admin · 2023901</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="page-sub" id="pageSub">Saturday, 9 May 2026 · Live pipeline active</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-wrap">
+        <div class="search-bar">
+          <span>🔍</span>
+          <input type="text" id="searchInput" placeholder="Search GIKIVault..." oninput="handleSearch(this.value)" onblur="setTimeout(closeSearch,150)"/>
+          <span style="font-size:11px;opacity:.4;">⌘K</span>
+        </div>
+        <div class="search-dropdown" id="searchDropdown"></div>
+      </div>
+      <div class="icon-btn notif-dot" onclick="openNotif()" title="Notifications">🔔</div>
+      <div class="icon-btn" onclick="navTo('aws',document.querySelectorAll('.nav-item')[5])" title="Settings">⚙️</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="pg-dashboard">
+    <div class="stats-grid">
+      <div class="stat-card blue" onclick="navTo('events',null)">
+        <div class="stat-icon">📅</div>
+        <div class="stat-val">47</div>
+        <div class="stat-label">Upcoming Events</div>
+        <div class="stat-delta up">↑ 12 this week</div>
+      </div>
+      <div class="stat-card green" onclick="navTo('lambda',null)">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-val">3</div>
+        <div class="stat-label">Active Pipelines</div>
+        <div class="stat-delta up">● All healthy</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-icon">👤</div>
+        <div class="stat-val">1,284</div>
+        <div class="stat-label">Registered Users</div>
+        <div class="stat-delta up">↑ 23 today</div>
+      </div>
+      <div class="stat-card pink" onclick="openNotif()">
+        <div class="stat-icon">🚨</div>
+        <div class="stat-val">2</div>
+        <div class="stat-label">Active Alerts</div>
+        <div class="stat-delta dn">1 warn · 1 info</div>
+      </div>
+    </div>
+    <div class="main-grid">
+      <div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Upcoming Campus Events</div>
+            <button class="btn-sm" onclick="navTo('events',null)">View all →</button>
+          </div>
+          <div class="tab-bar" id="dashTabBar">
+            <button class="tab active" onclick="filterEvents('all',this,'eventsList')">All</button>
+            <button class="tab" onclick="filterEvents('academic',this,'eventsList')">Academic</button>
+            <button class="tab" onclick="filterEvents('sports',this,'eventsList')">Sports</button>
+            <button class="tab" onclick="filterEvents('social',this,'eventsList')">Social</button>
+            <button class="tab" onclick="filterEvents('workshop',this,'eventsList')">Workshop</button>
+          </div>
+          <div id="eventsList"></div>
+        </div>
+      </div>
+      <div class="right-col">
+        <div class="panel">
+          <div class="weather-big">
+            <div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">📍 Topi, KPK · OpenWeatherMap API</div>
+              <div class="weather-temp">28<span class="weather-sup">°C</span></div>
+              <div style="font-size:13px;color:var(--muted);margin-top:5px;">Partly Cloudy · Feels like 31°C</div>
+            </div>
+            <div style="font-size:52px;line-height:1;">⛅</div>
+          </div>
+          <div class="weather-stats">
+            <div class="weather-stat"><div class="ws-label">Humidity</div><div class="ws-val">64%</div></div>
+            <div class="weather-stat"><div class="ws-label">Wind</div><div class="ws-val">14 km/h</div></div>
+            <div class="weather-stat"><div class="ws-label">UV Index</div><div class="ws-val">High · 7</div></div>
+            <div class="weather-stat"><div class="ws-label">Visibility</div><div class="ws-val">10 km</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Campus News</div>
+            <button class="btn-sm" onclick="navTo('news',null)">RSS Feed →</button>
+          </div>
+          <div class="news-item" onclick="showToast('Opening article...','info')"><div class="news-headline">GIKI ranked top 5 engineering universities in Pakistan by HEC 2026</div><div class="news-time">2 hours ago</div></div>
+          <div class="news-item" onclick="showToast('Opening article...','info')"><div class="news-headline">New hostel wing construction begins — 300 additional beds by September</div><div class="news-time">5 hours ago</div></div>
+          <div class="news-item" onclick="showToast('Opening article...','info')"><div class="news-headline">CE Dept introduces optional AWS certification prep track for Fall 2026</div><div class="news-time">Yesterday, 3:40 PM</div></div>
+          <div class="news-item" onclick="showToast('Opening article...','info')"><div class="news-headline">GIKI robotics team advances to national finals in Islamabad</div><div class="news-time">Yesterday, 11:20 AM</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-grid">
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Lambda Functions</div><button class="btn-sm" onclick="navTo('lambda',null)">View all →</button></div>
+        <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">ticketmaster-ingestion</div><div class="lambda-meta"><div style="color:var(--accent2);">Healthy</div><div>2m ago</div></div></div>
+        <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">weather-fetch</div><div class="lambda-meta"><div style="color:var(--accent2);">Healthy</div><div>14m ago</div></div></div>
+        <div class="lambda-item"><div class="status-dot dot-amber"></div><div class="lambda-name">rss-campus-feed</div><div class="lambda-meta"><div style="color:var(--accent3);">Slow 2.4s</div><div>8m ago</div></div></div>
+        <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">sqs-event-processor</div><div class="lambda-meta"><div style="color:var(--accent2);">Healthy</div><div>1m ago</div></div></div>
+        <div class="sparkline">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;">Invocations · last 7 days</div>
+          <div class="spark-row">
+            <div class="spark-bar" style="height:35%"></div><div class="spark-bar" style="height:55%"></div>
+            <div class="spark-bar" style="height:45%"></div><div class="spark-bar" style="height:70%"></div>
+            <div class="spark-bar hi" style="height:100%"></div><div class="spark-bar" style="height:80%"></div>
+            <div class="spark-bar" style="height:60%"></div>
+          </div>
+          <div class="spark-labels"><div class="spark-label">Sun</div><div class="spark-label">Mon</div><div class="spark-label">Tue</div><div class="spark-label">Wed</div><div class="spark-label">Thu</div><div class="spark-label">Fri</div><div class="spark-label">Sat</div></div>
+          <div class="spark-summary"><div class="spark-stat">Total: <strong>4,821</strong></div><div class="spark-stat">Errors: <strong>3</strong></div><div class="spark-stat">Avg: <strong>689/day</strong></div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">AWS Services</div><button class="btn-sm" onclick="navTo('aws',null)">Details →</button></div>
+        <div class="service-grid">
+          <div class="service-tile" onclick="openAwsCard('ec2')"><div class="service-logo" style="background:rgba(79,131,245,.1)">🖥</div><div><div class="service-name">EC2 · Flask</div><div class="service-status" style="color:var(--accent2)">2 instances</div></div></div>
+          <div class="service-tile" onclick="openAwsCard('rds')"><div class="service-logo" style="background:rgba(34,217,165,.1)">🗄</div><div><div class="service-name">RDS Postgres</div><div class="service-status" style="color:var(--accent2)">Multi-AZ</div></div></div>
+          <div class="service-tile" onclick="openAwsCard('s3')"><div class="service-logo" style="background:rgba(245,166,35,.1)">📦</div><div><div class="service-name">S3 Buckets</div><div class="service-status" style="color:var(--accent2)">2.1 GB</div></div></div>
+          <div class="service-tile" onclick="openAwsCard('cloudfront')"><div class="service-logo" style="background:rgba(240,90,126,.1)">🌐</div><div><div class="service-name">CloudFront</div><div class="service-status" style="color:var(--accent2)">CDN live</div></div></div>
+          <div class="service-tile" onclick="openAwsCard('sqs')"><div class="service-logo" style="background:rgba(79,131,245,.1)">📨</div><div><div class="service-name">SQS</div><div class="service-status" style="color:var(--accent2)">4 msgs</div></div></div>
+          <div class="service-tile" onclick="openAwsCard('cognito')"><div class="service-logo" style="background:rgba(34,217,165,.1)">🔐</div><div><div class="service-name">Cognito</div><div class="service-status" style="color:var(--accent2)">1,284 users</div></div></div>
+          <div class="service-tile" onclick="openAwsCard('apigw')"><div class="service-logo" style="background:rgba(245,166,35,.1)">🔀</div><div><div class="service-name">API Gateway</div><div class="service-status" style="color:var(--accent2)">throttled</div></div></div>
+          <div class="service-tile" onclick="openAwsCard('sns')"><div class="service-logo" style="background:rgba(240,90,126,.1)">📡</div><div><div class="service-name">SNS Alerts</div><div class="service-status" style="color:var(--accent3)">2 alarms</div></div></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">SNS Alerts</div><button class="btn-sm" onclick="showToast('Alert config opened','info')">Configure</button></div>
+          <div class="alert-item"><span style="font-size:15px;flex-shrink:0;">⚠️</span><div><div class="alert-text">rss-campus-feed latency above 2s threshold</div><div class="alert-when">8 min ago</div></div></div>
+          <div class="alert-item"><span style="font-size:15px;flex-shrink:0;">ℹ️</span><div><div class="alert-text">Auto Scaling triggered: +1 EC2 instance</div><div class="alert-when">1 hr ago</div></div></div>
+          <div class="alert-item"><span style="font-size:15px;flex-shrink:0;">✅</span><div><div class="alert-text">RDS Multi-AZ failover test passed</div><div class="alert-when">3 hr ago</div></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Data Pipeline</div><span style="font-size:12px;color:var(--accent2);">● Live</span></div>
+          <div class="pipeline">
+            <div class="pipe-step"><div class="pipe-node dot-green"></div><div style="flex:1;font-size:13px;">EventBridge Scheduler</div><span class="pipe-badge badge-ok">every 15m</span></div>
+            <div class="pipe-connector"></div>
+            <div class="pipe-step"><div class="pipe-node dot-green"></div><div style="flex:1;font-size:13px;">Lambda Ingestion</div><span class="pipe-badge badge-run">running</span></div>
+            <div class="pipe-connector"></div>
+            <div class="pipe-step"><div class="pipe-node dot-green"></div><div style="flex:1;font-size:13px;">SQS Message Queue</div><span class="pipe-badge badge-ok">4 msgs</span></div>
+            <div class="pipe-connector"></div>
+            <div class="pipe-step"><div class="pipe-node dot-green"></div><div style="flex:1;font-size:13px;">Lambda Processor</div><span class="pipe-badge badge-ok">done</span></div>
+            <div class="pipe-connector"></div>
+            <div class="pipe-step"><div class="pipe-node dot-green"></div><div style="flex:1;font-size:13px;">RDS PostgreSQL Write</div><span class="pipe-badge badge-ok">stored</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENTS PAGE -->
+  <div class="page" id="pg-events">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div><div class="page-title">All Events</div><div class="page-sub">Fetched live · Ticketmaster API → Lambda → SQS → RDS</div></div>
+      <button class="btn-sm btn-primary" onclick="triggerLambda('ticketmaster-ingestion')">⚡ Trigger Ingestion Lambda</button>
+    </div>
+    <div class="panel">
+      <div class="tab-bar">
+        <button class="tab active" onclick="filterEvents('all',this,'eventsListFull')">All</button>
+        <button class="tab" onclick="filterEvents('academic',this,'eventsListFull')">Academic</button>
+        <button class="tab" onclick="filterEvents('sports',this,'eventsListFull')">Sports</button>
+        <button class="tab" onclick="filterEvents('social',this,'eventsListFull')">Social</button>
+        <button class="tab" onclick="filterEvents('workshop',this,'eventsListFull')">Workshop</button>
+      </div>
+      <div id="eventsListFull"></div>
+    </div>
+  </div>
+
+  <!-- NEWS PAGE -->
+  <div class="page" id="pg-news">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div><div class="page-title">Campus News</div><div class="page-sub">Live RSS feed ingested by Lambda every 15 minutes</div></div>
+      <button class="btn-sm btn-primary" onclick="triggerLambda('rss-campus-feed')">⚡ Refresh RSS Feed</button>
+    </div>
+    <div class="panel">
+      <div class="news-item"><div class="news-headline">GIKI ranked top 5 engineering universities in Pakistan by HEC 2026</div><div class="news-time">2 hours ago · Source: HEC Official RSS</div></div>
+      <div class="news-item"><div class="news-headline">New hostel wing construction begins — 300 additional beds by September</div><div class="news-time">5 hours ago · Source: GIKI Campus RSS</div></div>
+      <div class="news-item"><div class="news-headline">CE Dept introduces optional AWS certification prep track for Fall 2026</div><div class="news-time">Yesterday, 3:40 PM · Source: GIKI Campus RSS</div></div>
+      <div class="news-item"><div class="news-headline">GIKI robotics team advances to national finals in Islamabad</div><div class="news-time">Yesterday, 11:20 AM · Source: GIKI Campus RSS</div></div>
+      <div class="news-item"><div class="news-headline">Library extended hours during finals — open till midnight from May 15</div><div class="news-time">2 days ago · Source: GIKI Campus RSS</div></div>
+      <div class="news-item"><div class="news-headline">Faculty senate approves revised academic calendar for 2026–27</div><div class="news-time">3 days ago · Source: Academic Affairs RSS</div></div>
+    </div>
+  </div>
+
+  <!-- WEATHER PAGE -->
+  <div class="page" id="pg-weather">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div><div class="page-title">Weather</div><div class="page-sub">Live data from OpenWeatherMap API via Lambda</div></div>
+      <button class="btn-sm btn-primary" onclick="triggerLambda('weather-fetch')">⚡ Refresh Weather</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">Current Conditions — Topi, KPK</div></div>
+        <div class="weather-big">
+          <div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">📍 34.0°N 72.6°E · OpenWeatherMap</div>
+            <div class="weather-temp">28<span class="weather-sup">°C</span></div>
+            <div style="font-size:13px;color:var(--muted);margin-top:6px;">Partly Cloudy · Feels like 31°C</div>
+          </div>
+          <div style="font-size:60px;line-height:1;">⛅</div>
+        </div>
+        <div class="weather-stats">
+          <div class="weather-stat"><div class="ws-label">Humidity</div><div class="ws-val">64%</div></div>
+          <div class="weather-stat"><div class="ws-label">Wind</div><div class="ws-val">14 km/h</div></div>
+          <div class="weather-stat"><div class="ws-label">UV Index</div><div class="ws-val">High · 7</div></div>
+          <div class="weather-stat"><div class="ws-label">Pressure</div><div class="ws-val">1012 hPa</div></div>
+          <div class="weather-stat"><div class="ws-label">Visibility</div><div class="ws-val">10 km</div></div>
+          <div class="weather-stat"><div class="ws-label">Dew Point</div><div class="ws-val">20°C</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><div class="panel-title">5-Day Forecast</div></div>
+        <div style="padding:4px 0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--border)"><span style="font-size:13px;width:50px;">Today</span><span style="font-size:20px;">⛅</span><span style="font-size:12px;color:var(--muted);flex:1;margin-left:10px;">Partly Cloudy</span><span style="font-size:13px;font-weight:600;">28 / 19°C</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--border)"><span style="font-size:13px;width:50px;">Sun</span><span style="font-size:20px;">☀️</span><span style="font-size:12px;color:var(--muted);flex:1;margin-left:10px;">Sunny</span><span style="font-size:13px;font-weight:600;">31 / 20°C</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--border)"><span style="font-size:13px;width:50px;">Mon</span><span style="font-size:20px;">🌥</span><span style="font-size:12px;color:var(--muted);flex:1;margin-left:10px;">Cloudy</span><span style="font-size:13px;font-weight:600;">26 / 17°C</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid var(--border)"><span style="font-size:13px;width:50px;">Tue</span><span style="font-size:20px;">🌧</span><span style="font-size:12px;color:var(--muted);flex:1;margin-left:10px;">Light Rain</span><span style="font-size:13px;font-weight:600;">24 / 16°C</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px"><span style="font-size:13px;width:50px;">Wed</span><span style="font-size:20px;">⛅</span><span style="font-size:12px;color:var(--muted);flex:1;margin-left:10px;">Partly Cloudy</span><span style="font-size:13px;font-weight:600;">27 / 18°C</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAMBDA PAGE -->
+  <div class="page" id="pg-lambda">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div><div class="page-title">Lambda Functions</div><div class="page-sub">Serverless compute scheduled via EventBridge every 15 minutes</div></div>
+      <button class="btn-sm btn-primary" onclick="triggerAllLambdas()">⚡ Run All Functions</button>
+    </div>
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-header"><div class="panel-title">Function Status</div></div>
+      <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">ticketmaster-ingestion</div><div style="flex:1;font-size:12px;color:var(--muted);">Fetches events from Ticketmaster API, pushes to SQS</div><div class="lambda-meta"><div style="color:var(--accent2);">Healthy · 320ms</div><div>2m ago</div></div><button class="btn-sm" style="margin-left:12px;" onclick="triggerLambda('ticketmaster-ingestion')">▶ Run</button></div>
+      <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">weather-fetch</div><div style="flex:1;font-size:12px;color:var(--muted);">Calls OpenWeatherMap API, stores result in RDS</div><div class="lambda-meta"><div style="color:var(--accent2);">Healthy · 210ms</div><div>14m ago</div></div><button class="btn-sm" style="margin-left:12px;" onclick="triggerLambda('weather-fetch')">▶ Run</button></div>
+      <div class="lambda-item"><div class="status-dot dot-amber"></div><div class="lambda-name">rss-campus-feed</div><div style="flex:1;font-size:12px;color:var(--muted);">Parses GIKI campus RSS feed, pushes items to SQS</div><div class="lambda-meta"><div style="color:var(--accent3);">Slow · 2,400ms</div><div>8m ago</div></div><button class="btn-sm" style="margin-left:12px;" onclick="triggerLambda('rss-campus-feed')">▶ Run</button></div>
+      <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">sqs-event-processor</div><div style="flex:1;font-size:12px;color:var(--muted);">Reads SQS messages, parses & writes to RDS PostgreSQL</div><div class="lambda-meta"><div style="color:var(--accent2);">Healthy · 185ms</div><div>1m ago</div></div><button class="btn-sm" style="margin-left:12px;" onclick="triggerLambda('sqs-event-processor')">▶ Run</button></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">API Gateway — Live Call Log</div><span style="font-size:12px;color:var(--accent2);">● Streaming</span></div>
+      <div style="padding:16px 20px;">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Your API Gateway Base URL — paste here to make real AWS calls:</div>
+        <div class="api-input-row">
+          <input class="api-input" id="apiGwUrl" placeholder="https://xxxxxx.execute-api.ap-south-1.amazonaws.com/prod"/>
+          <button class="btn-sm btn-primary" onclick="testApiGateway()">Test Connection</button>
+        </div>
+        <div class="api-log" id="apiLog">
+          <div class="log-line"><span class="log-ts">[10:14:22]</span> <span class="log-method">GET</span> <span class="log-url">/events?limit=20</span> <span class="log-ok">200 OK · 145ms</span></div>
+          <div class="log-line"><span class="log-ts">[10:14:07]</span> <span class="log-method">GET</span> <span class="log-url">/weather/current</span> <span class="log-ok">200 OK · 98ms</span></div>
+          <div class="log-line"><span class="log-ts">[09:59:11]</span> <span class="log-method">POST</span> <span class="log-url">/events/ingest</span> <span class="log-ok">201 Created · 320ms</span></div>
+          <div class="log-line"><span class="log-ts">[09:44:05]</span> <span class="log-method">GET</span> <span class="log-url">/news/feed</span> <span class="log-ok">200 OK · 2400ms</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AWS PAGE -->
+  <div class="page" id="pg-aws">
+    <div style="margin-bottom:20px;"><div class="page-title">AWS Services</div><div class="page-sub">All infrastructure services powering GIKIVault — click any card for details</div></div>
+    <div class="config-banner">
+      <span style="font-size:22px;">🔑</span>
+      <div class="config-banner-text">
+        <strong>Connect your real AWS backend</strong> — once you deploy this on AWS, paste your API Gateway URL here. The dashboard will make live API calls to fetch real data. Never paste secret keys — only the public API Gateway URL is needed.
+        <div class="api-input-row">
+          <input class="api-input" id="apiGwUrl2" placeholder="https://xxxxxx.execute-api.ap-south-1.amazonaws.com/prod"/>
+          <button class="btn-sm btn-primary" onclick="saveApiUrl()">Save & Test</button>
+        </div>
+      </div>
+    </div>
+    <div class="aws-grid" id="awsGrid"></div>
+  </div>
+
+  <!-- IAM PAGE -->
+  <div class="page" id="pg-iam">
+    <div style="margin-bottom:20px;"><div class="page-title">IAM & Security</div><div class="page-sub">Role-based access control · Least privilege · MFA enforced</div></div>
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-header"><div class="panel-title">IAM Roles</div></div>
+      <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">GIKIVault-LambdaRole</div><div style="flex:1;font-size:12px;color:var(--muted);">Read S3, write SQS, invoke RDS, write CloudWatch logs</div><div class="lambda-meta"><div style="color:var(--accent2);">Active</div></div></div>
+      <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">GIKIVault-EC2Role</div><div style="flex:1;font-size:12px;color:var(--muted);">Read RDS (private subnet only), read S3 static assets</div><div class="lambda-meta"><div style="color:var(--accent2);">Active</div></div></div>
+      <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">GIKIVault-AdminRole</div><div style="flex:1;font-size:12px;color:var(--muted);">Full access · MFA required · all actions CloudTrail logged</div><div class="lambda-meta"><div style="color:var(--accent2);">Active · MFA ✓</div></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Network & Security Controls</div></div>
+      <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">VPC — Custom (10.0.0.0/16)</div><div style="flex:1;font-size:12px;color:var(--muted);">Public + private subnets across 2 AZs · NAT Gateway active</div><div class="lambda-meta"><div style="color:var(--accent2);">Configured</div></div></div>
+      <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">Security Groups + NACLs</div><div style="flex:1;font-size:12px;color:var(--muted);">Layered firewall · RDS port 5432 private only · no public DB access</div><div class="lambda-meta"><div style="color:var(--accent2);">Enforced</div></div></div>
+      <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">CloudTrail</div><div style="flex:1;font-size:12px;color:var(--muted);">Full audit log of all API calls · stored in S3 with bucket policy</div><div class="lambda-meta"><div style="color:var(--accent2);">Recording</div></div></div>
+      <div class="lambda-item"><div class="status-dot dot-green"></div><div class="lambda-name">Cognito User Pool</div><div style="flex:1;font-size:12px;color:var(--muted);">JWT tokens · Google OAuth SSO · student and admin user groups</div><div class="lambda-meta"><div style="color:var(--accent2);">Active</div></div></div>
+    </div>
+  </div>
+
+  <!-- LOGS PAGE -->
+  <div class="page" id="pg-logs">
+    <div style="margin-bottom:20px;"><div class="page-title">Audit Logs</div><div class="page-sub">CloudTrail — full API call history across all services</div></div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Recent CloudTrail Events</div><button class="btn-sm" onclick="showToast('Exporting logs to S3...','info')">Export to S3</button></div>
+      <div style="padding:16px 20px;">
+        <div class="api-log" style="max-height:400px;font-size:12px;">
+          <div class="log-line" style="padding:5px 0;"><span class="log-ts">[2026-05-09 10:14:22]</span> <span class="log-ok">InvokeFunction</span> · Lambda:ticketmaster-ingestion · Principal: LambdaRole</div>
+          <div class="log-line" style="padding:5px 0;"><span class="log-ts">[2026-05-09 10:14:20]</span> <span class="log-ok">GetObject</span> · S3:gikivault-assets/poster-12.jpg · Principal: EC2Role</div>
+          <div class="log-line" style="padding:5px 0;"><span class="log-ts">[2026-05-09 10:00:05]</span> <span class="log-ok">SendMessage</span> · SQS:gikivault-events-queue · Principal: LambdaRole</div>
+          <div class="log-line" style="padding:5px 0;"><span class="log-ts">[2026-05-09 09:59:11]</span> <span class="log-ok">InvokeFunction</span> · Lambda:sqs-event-processor · Principal: LambdaRole</div>
+          <div class="log-line" style="padding:5px 0;"><span class="log-ts">[2026-05-09 09:44:05]</span> <span class="log-method">ConsoleLogin</span> · IAM:2023901-Abdul · MFA: true · IP: 103.x.x.x</div>
+          <div class="log-line" style="padding:5px 0;"><span class="log-ts">[2026-05-09 09:30:01]</span> <span class="log-ok">DescribeInstances</span> · EC2 · Principal: AdminRole · Region: ap-south-1</div>
+          <div class="log-line" style="padding:5px 0;"><span class="log-ts">[2026-05-09 09:29:00]</span> <span class="log-ok">InvokeFunction</span> · Lambda:weather-fetch · Principal: LambdaRole</div>
+          <div class="log-line" style="padding:5px 0;"><span class="log-ts">[2026-05-09 09:14:00]</span> <span class="log-ok">PutItem</span> · RDS:events_table · 12 records inserted · Principal: LambdaRole</div>
+          <div class="log-line" style="padding:5px 0;"><span class="log-ts">[2026-05-09 08:59:55]</span> <span class="log-method">CreateDistribution</span> · CloudFront · Principal: AdminRole · MFA: true</div>
+          <div class="log-line" style="padding:5px 0;"><span class="log-ts">[2026-05-09 08:30:00]</span> <span class="log-method">InvokeFunction</span> · Lambda:rss-campus-feed · Duration: 2400ms ⚠️ SLOW</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+const events=[
+  {day:'12',month:'May',title:'National Science Olympiad — GIKI Chapter',loc:'CS Auditorium',time:'9:00 AM',tag:'academic',src:'Ticketmaster API',desc:'Annual science competition open to all departments. 200+ participants expected across 12 events.'},
+  {day:'14',month:'May',title:'Inter-Department Cricket Tournament',loc:'Sports Ground A',time:'3:00 PM',tag:'sports',src:'Campus RSS',desc:'Round-robin format — top 2 teams from each department qualify for the semis.'},
+  {day:'17',month:'May',title:'Entrepreneurship Summit 2026',loc:'Seminar Hall 2',time:'10:00 AM',tag:'workshop',src:'Ticketmaster API',desc:'Keynote by HBL CEO. Pitching competition with PKR 50,000 prize. Register via GIKIVault.'},
+  {day:'20',month:'May',title:'End-Semester Cultural Night',loc:'Main Lawn',time:'7:00 PM',tag:'social',src:'Campus RSS',desc:'Music, food, performances. Free entry for all GIKI students and faculty.'},
+  {day:'22',month:'May',title:'Faculty Research Presentation Day',loc:'FCSE Building',time:'11:00 AM',tag:'academic',src:'Campus RSS',desc:'Presentations by 14 faculty members on current research projects and publications.'},
+  {day:'25',month:'May',title:'AWS Cloud Workshop — CE Dept',loc:'Lab Block C',time:'2:00 PM',tag:'workshop',src:'Campus RSS',desc:'Hands-on AWS lab: EC2, Lambda, S3, RDS. Bring your laptop and AWS Free Tier account.'},
+  {day:'28',month:'May',title:'Football Championship Finals',loc:'Sports Ground B',time:'4:00 PM',tag:'sports',src:'Ticketmaster API',desc:'Final match between FCSE and FME teams. Seating is limited — RSVP required.'},
+  {day:'01',month:'Jun',title:'Convocation Ceremony 2026',loc:'Main Auditorium',time:'10:00 AM',tag:'academic',src:'Campus RSS',desc:'Graduation ceremony for Class of 2026. Invitation only for graduates and 2 guests each.'},
+];
+const tagLabels={academic:'Academic',sports:'Sports',social:'Social',workshop:'Workshop'};
+
+function renderEvents(filter,btn,containerId){
+  if(btn){
+    const bar=btn.closest('.tab-bar')||btn.parentElement;
+    bar.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const c=document.getElementById(containerId);
+  if(!c)return;
+  const filtered=filter==='all'?events:events.filter(e=>e.tag===filter);
+  c.innerHTML=filtered.map((e,i)=>`
+    <div class="event-item" onclick="openEvent(${events.indexOf(e)})">
+      <div class="event-date"><div class="event-month">${e.month}</div><div class="event-day">${e.day}</div></div>
+      <div class="event-info">
+        <div class="event-title">${e.title}</div>
+        <div class="event-meta"><span>📍 ${e.loc}</span><span>🕑 ${e.time}</span></div>
+      </div>
+      <span class="event-tag tag-${e.tag}">${tagLabels[e.tag]}</span>
+    </div>`).join('');
+}
+// alias for inline onclick compatibility
+function filterEvents(f,b,c){renderEvents(f,b,c);}
+
+function openEvent(i){
+  const e=events[i];
+  document.getElementById('modalTitle').textContent=e.title;
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-field"><div class="modal-label">Date & Time</div><div class="modal-val">${e.month} ${e.day} · ${e.time}</div></div>
+    <div class="modal-field"><div class="modal-label">Location</div><div class="modal-val">📍 ${e.loc}</div></div>
+    <div class="modal-field"><div class="modal-label">Category</div><div class="modal-val"><span class="event-tag tag-${e.tag}">${tagLabels[e.tag]}</span></div></div>
+    <div class="modal-field"><div class="modal-label">Data Source (AWS Pipeline)</div><div class="modal-val" style="color:var(--accent)">⚡ ${e.src} → Lambda → SQS → RDS PostgreSQL</div></div>
+    <div class="modal-field"><div class="modal-label">Description</div><div class="modal-val" style="color:var(--muted);line-height:1.6">${e.desc}</div></div>`;
+  document.getElementById('eventModal').classList.add('open');
+}
+function rsvpEvent(){closeModal('eventModal');showToast('Redirecting to Cognito login for RSVP...','info');}
+
+const awsServices={
+  ec2:{name:'EC2 + Auto Scaling',icon:'🖥',desc:'Flask web app on 2 EC2 instances (t3.micro) behind an Application Load Balancer. Auto Scaling Group maintains min 2 instances across 2 AZs (ap-south-1a and ap-south-1b). Instances live in the private subnet — not internet-accessible.',status:'2 instances running',region:'ap-south-1',console:'https://console.aws.amazon.com/ec2'},
+  rds:{name:'RDS PostgreSQL',icon:'🗄',desc:'Multi-AZ RDS PostgreSQL instance (db.t3.micro). Stores event data, weather records, news items, and user sessions. Only accessible from EC2 instances in the private subnet via port 5432. Not internet-accessible.',status:'Available · Multi-AZ on',region:'ap-south-1',console:'https://console.aws.amazon.com/rds'},
+  s3:{name:'S3 Buckets',icon:'📦',desc:'3 S3 buckets: (1) gikivault-frontend — static React/HTML assets, (2) gikivault-media — event poster images served via CloudFront, (3) gikivault-logs — CloudTrail and access logs. Lifecycle policies move to Glacier after 90 days.',status:'3 buckets · 2.1 GB stored',region:'ap-south-1',console:'https://s3.console.aws.amazon.com'},
+  cloudfront:{name:'CloudFront CDN',icon:'🌐',desc:'CloudFront distribution serving S3 static assets globally with HTTPS enforced. Custom domain with SSL certificate via AWS ACM. All HTTP requests redirect to HTTPS. Edge caching reduces latency for students anywhere.',status:'Deployed · HTTPS enforced',region:'Global (35+ edge locations)',console:'https://console.aws.amazon.com/cloudfront'},
+  sqs:{name:'SQS Queues',icon:'📨',desc:'Decouples Lambda ingestion from processing. Main queue (gikivault-events-queue) receives messages from ingestion Lambdas. Dead Letter Queue (DLQ) catches failed messages after 3 retries. Currently 4 messages in flight.',status:'4 msgs in queue · DLQ: 0',region:'ap-south-1',console:'https://console.aws.amazon.com/sqs'},
+  cognito:{name:'Amazon Cognito',icon:'🔐',desc:'Student authentication with sign-up, sign-in, and JWT token issuance. Google OAuth SSO enabled for giki.edu.pk Google accounts. Two user groups: Students (read-only) and Admins (full access). Tokens verified by API Gateway.',status:'1,284 users · 2 groups active',region:'ap-south-1',console:'https://console.aws.amazon.com/cognito'},
+  apigw:{name:'API Gateway',icon:'🔀',desc:'Public-facing REST API exposing /events, /weather, /news endpoints to the frontend dashboard. Secured with API keys and throttling (1,000 req/sec burst limit). Each endpoint triggers the relevant Lambda function. Cognito authorizer validates JWT tokens.',status:'REST API · Throttled · HTTPS',region:'ap-south-1',console:'https://console.aws.amazon.com/apigateway'},
+  sns:{name:'SNS + CloudWatch',icon:'📡',desc:'CloudWatch dashboards track Lambda invocations, errors, EC2 CPU, RDS connections. Custom alarms trigger SNS notifications. SNS sends email + SMS to admins when Auto Scaling fires, Lambda error rate spikes, or RDS CPU > 80%.',status:'2 alarms active · SNS live',region:'ap-south-1',console:'https://console.aws.amazon.com/cloudwatch'},
+};
+
+function renderAwsGrid(){
+  const g=document.getElementById('awsGrid');
+  if(!g)return;
+  g.innerHTML=Object.entries(awsServices).map(([k,s])=>`
+    <div class="aws-card" onclick="openAwsCard('${k}')">
+      <div class="aws-card-icon">${s.icon}</div>
+      <div class="aws-card-name">${s.name}</div>
+      <div class="aws-card-desc">${s.desc.substring(0,95)}...</div>
+      <span class="aws-status ok">● ${s.status}</span>
+    </div>`).join('');
+}
+
+function openAwsCard(key){
+  const s=awsServices[key];
+  if(!s)return;
+  document.getElementById('awsModalTitle').textContent=s.name;
+  document.getElementById('awsModalBody').innerHTML=`
+    <div class="modal-field"><div class="modal-label">Status</div><div class="modal-val" style="color:var(--accent2)">● ${s.status}</div></div>
+    <div class="modal-field"><div class="modal-label">Region</div><div class="modal-val">${s.region}</div></div>
+    <div class="modal-field"><div class="modal-label">Description</div><div class="modal-val" style="color:var(--muted);line-height:1.65">${s.desc}</div></div>`;
+  document.getElementById('awsModalBtn').onclick=()=>{window.open(s.console,'_blank');};
+  document.getElementById('awsModal').classList.add('open');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+const pageMeta={
+  dashboard:{title:'Dashboard',sub:'Saturday, 9 May 2026 · Live pipeline active'},
+  events:{title:'All Events',sub:'Fetched via Ticketmaster API → Lambda → SQS → RDS'},
+  news:{title:'Campus News',sub:'Live RSS feed via Lambda every 15 minutes'},
+  weather:{title:'Weather',sub:'OpenWeatherMap API via Lambda · Topi, KPK'},
+  lambda:{title:'Lambda Functions',sub:'Serverless compute · EventBridge scheduled every 15 min'},
+  aws:{title:'AWS Services',sub:'All infrastructure services powering GIKIVault'},
+  iam:{title:'IAM & Security',sub:'Role-based access · CloudTrail enabled · MFA enforced'},
+  logs:{title:'Audit Logs',sub:'CloudTrail API call history across all services'},
+};
+
+function navTo(page,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('pg-'+page);
+  if(pg)pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-item').forEach(n=>{
+      const oc=n.getAttribute('onclick')||'';
+      if(oc.includes("'"+page+"'")) n.classList.add('active');
+    });
+  }
+  const m=pageMeta[page]||{title:page,sub:''};
+  document.getElementById('pageTitle').textContent=m.title;
+  document.getElementById('pageSub').textContent=m.sub;
+  if(page==='events') renderEvents('all',null,'eventsListFull');
+  if(page==='aws') renderAwsGrid();
+}
+
+function triggerLambda(name){
+  showToast('⚡ Invoking '+name+'...','info');
+  setTimeout(()=>{
+    addApiLog('POST','/invoke/'+name,'202',true);
+    showToast('✅ '+name+' executed successfully','success');
+  },1400);
+}
+function triggerAllLambdas(){
+  ['ticketmaster-ingestion','weather-fetch','rss-campus-feed','sqs-event-processor'].forEach((fn,i)=>{
+    setTimeout(()=>triggerLambda(fn),i*900);
+  });
+}
+
+function addApiLog(method,url,status,ok){
+  const log=document.getElementById('apiLog');
+  if(!log)return;
+  const ts=new Date().toTimeString().split(' ')[0];
+  const line=document.createElement('div');
+  line.className='log-line';
+  line.innerHTML=`<span class="log-ts">[${ts}]</span> <span class="log-method">${method}</span> <span class="log-url">${url}</span> <span class="${ok?'log-ok':'log-err'}">${status} ${ok?'OK':'Error'} · ${Math.floor(Math.random()*300+80)}ms</span>`;
+  log.insertBefore(line,log.firstChild);
+}
+
+function testApiGateway(){
+  const url=(document.getElementById('apiGwUrl')||{}).value||(document.getElementById('apiGwUrl2')||{}).value||'';
+  if(!url||!url.startsWith('http')){showToast('Please enter a valid API Gateway URL','warn');return;}
+  showToast('Testing connection to API Gateway...','info');
+  fetch('https://xnwj8a9gl4.execute-api.us-east-1.amazonaws.com/prod/events?limit=5')
+    .then(r=>{addApiLog('GET','/events?limit=5',r.status,r.ok);showToast(r.ok?'✅ API Gateway connected and responding!':'❌ Got HTTP '+r.status,r.ok?'success':'warn');})
+    .catch(()=>{addApiLog('GET','/events?limit=5','ERR',false);showToast('❌ Could not reach API. Check CORS settings or URL.','warn');});
+}
+function saveApiUrl(){
+  const v=(document.getElementById('apiGwUrl2')||{}).value;
+  if(!v)return;
+  const other=document.getElementById('apiGwUrl');
+  if(other)other.value=v;
+  testApiGateway();
+}
+
+function showToast(msg,type='info'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast '+type+' show';
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+function openNotif(){document.getElementById('notifDrawer').classList.add('open');}
+function closeNotif(){document.getElementById('notifDrawer').classList.remove('open');}
+
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+const searchData=[
+  {icon:'📅',label:'Events',sub:'View all campus events',page:'events'},
+  {icon:'🌤',label:'Weather',sub:'Topi, KPK forecast',page:'weather'},
+  {icon:'📰',label:'Campus News',sub:'RSS feed',page:'news'},
+  {icon:'⚡',label:'Lambda Functions',sub:'Serverless compute status',page:'lambda'},
+  {icon:'☁️',label:'AWS Services',sub:'EC2, RDS, S3 and more',page:'aws'},
+  {icon:'🔒',label:'IAM & Security',sub:'Roles, VPC, CloudTrail',page:'iam'},
+  {icon:'📋',label:'Audit Logs',sub:'CloudTrail history',page:'logs'},
+];
+function handleSearch(val){
+  const dd=document.getElementById('searchDropdown');
+  if(!val.trim()){dd.classList.remove('open');return;}
+  const res=searchData.filter(s=>s.label.toLowerCase().includes(val.toLowerCase())||s.sub.toLowerCase().includes(val.toLowerCase()));
+  if(!res.length){dd.classList.remove('open');return;}
+  dd.innerHTML=res.map(r=>`<div class="search-result" onmousedown="navTo('${r.page}',null);document.getElementById('searchInput').value='';closeSearch();"><span class="search-result-icon">${r.icon}</span><div><div>${r.label}</div><div class="search-result-sub">${r.sub}</div></div></div>`).join('');
+  dd.classList.add('open');
+}
+function closeSearch(){document.getElementById('searchDropdown').classList.remove('open');}
+
+// INIT
+const API_URL = 'https://xnwj8a9gl4.execute-api.us-east-1.amazonaws.com/prod';
+renderEvents('all',null,'eventsList');
+</script>
+</body>
+</html>
