@@ -19,13 +19,13 @@
 
 **CE308 — Introduction to Cloud Computing · Fall 2024 · GIKI, Topi**
 
-🌐 **Live Demo:** [https://d3jqcqbhgw2313.cloudfront.net](https://d3jqcqbhgw2313.cloudfront.net)
+ **Live Demo:** [https://d3jqcqbhgw2313.cloudfront.net](https://d3jqcqbhgw2313.cloudfront.net)
 
 </div>
 
 ---
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [Overview](#-overview)
 - [Architecture](#-architecture)
@@ -41,7 +41,7 @@
 
 ---
 
-## 🌟 Overview
+##  Overview
 
 GIKIVault is a **fully serverless, multi-tier cloud platform** that acts as a central intelligence hub for GIKI students and faculty. It automatically ingests live data from **three external public APIs**, processes it through an **event-driven pipeline**, and surfaces results via a **globally distributed web dashboard**.
 
@@ -60,7 +60,7 @@ GIKIVault is a **fully serverless, multi-tier cloud platform** that acts as a ce
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ### High-Level System Diagram
 
@@ -145,10 +145,10 @@ GIKIVault is a **fully serverless, multi-tier cloud platform** that acts as a ce
 
 ---
 
-## ☁️ AWS Services Used
+##  AWS Services Used
 
 <details>
-<summary><b>🌐 Networking — VPC</b></summary>
+<summary><b> Networking — VPC</b></summary>
 
 ```
 VPC: gikivault-vpc
@@ -180,7 +180,7 @@ Region: us-east-1
 </details>
 
 <details>
-<summary><b>⚡ Serverless — AWS Lambda (Python 3.12)</b></summary>
+<summary><b> Serverless — AWS Lambda (Python 3.12)</b></summary>
 
 ```
 EventBridge (every 15 min)
@@ -225,7 +225,7 @@ Dead Letter Queues ensure **zero data loss** on processing failures.
 </details>
 
 <details>
-<summary><b>🗄️ Database — Amazon RDS PostgreSQL 15</b></summary>
+<summary><b> Database — Amazon RDS PostgreSQL 15</b></summary>
 
 - Instance: `db.t3.micro` in **private subnet** (no internet exposure)
 - Credentials stored in SSM Parameter Store (KMS encrypted)
@@ -234,7 +234,7 @@ Dead Letter Queues ensure **zero data loss** on processing failures.
 </details>
 
 <details>
-<summary><b>🔐 Auth — Amazon Cognito</b></summary>
+<summary><b> Auth — Amazon Cognito</b></summary>
 
 - User Pool: `GIKIVaultUsers` (`ciaxjk`)
 - Email-based sign-up & login
@@ -245,7 +245,7 @@ Dead Letter Queues ensure **zero data loss** on processing failures.
 
 ---
 
-## 🔄 Data Flow
+##  Data Flow
 
 ```
 Step 1 ─── SCHEDULE
@@ -285,7 +285,7 @@ Step 7 ─── FRONTEND
 
 ---
 
-## 📡 API Reference
+##  API Reference
 
 **Base URL:** `https://xnwj8a9gl4.execute-api.us-east-1.amazonaws.com/prod`
 
@@ -327,7 +327,7 @@ Step 7 ─── FRONTEND
 
 ---
 
-## 🗃️ Database Schema
+##  Database Schema
 
 ```sql
 -- Stores events ingested from Ticketmaster API
@@ -363,7 +363,7 @@ CREATE TABLE news (
 
 ---
 
-## 🔒 Security Model
+##  Security Model
 
 ```
 ┌─────────────────────── SECURITY LAYERS ───────────────────────────┐
@@ -398,7 +398,7 @@ CREATE TABLE news (
 
 ---
 
-## 📊 Monitoring & Alerting
+##  Monitoring & Alerting
 
 ```
 CloudWatch Alarms
@@ -406,24 +406,24 @@ CloudWatch Alarms
       ├── ticketmaster-errors
       │       Metric : Lambda Errors (ticketmaster-ingestion)
       │       Alarm  : > 5 errors in 5 minutes
-      │       Action : SNS → gikivault-alerts → 📧 Email
+      │       Action : SNS → gikivault-alerts →  Email
       │
       ├── weather-errors
       │       Metric : Lambda Errors (weather-fetch)
       │       Alarm  : > 5 errors in 5 minutes
-      │       Action : SNS → gikivault-alerts → 📧 Email
+      │       Action : SNS → gikivault-alerts →  Email
       │
       └── rss-errors
               Metric : Lambda Errors (rss-campus-feed)
               Alarm  : > 5 errors in 5 minutes
-              Action : SNS → gikivault-alerts → 📧 Email
+              Action : SNS → gikivault-alerts →  Email
 ```
 
 > **CloudTrail** (`gikivault-trail`) records every AWS API call and stores logs in `aws-cloudtrail-logs-470379384049-d05b59aa` for forensic audit capability.
 
 ---
 
-## 🚀 Deployment & Configuration
+##  Deployment & Configuration
 
 ### Lambda Environment Variables
 
@@ -488,7 +488,7 @@ def handler(event, context):
 
 ---
 
-## ⚠️ Challenges & Solutions
+##  Challenges & Solutions
 
 | Challenge | Solution |
 |-----------|----------|
@@ -500,7 +500,7 @@ def handler(event, context):
 
 ---
 
-## 👥 Team
+##  Team
 
 | Role | Name | Student ID |
 |------|------|------------|
@@ -516,8 +516,8 @@ def handler(event, context):
 
 <div align="center">
 
-**Built with ❤️ on AWS · GIKI Fall 2024**
+**Built with  on AWS · GIKI Fall 2024**
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-d3jqcqbhgw2313.cloudfront.net-FF9900?style=for-the-badge)](https://d3jqcqbhgw2313.cloudfront.net)
+[![Live Demo](https://img.shields.io/badge/_Live_Demo-d3jqcqbhgw2313.cloudfront.net-FF9900?style=for-the-badge)](https://d3jqcqbhgw2313.cloudfront.net)
 
 </div>
